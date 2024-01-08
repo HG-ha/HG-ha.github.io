@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线免费图床接口 - API演示</title>
+	<!-- 引入 Bootstrap CSS -->
+	<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+			width:100%;
+			overflow-y: auto;
+        }
+
+        .containers {
+            margin: 0 auto;
+            text-align: center;
+			display: flex;
+			flex-direction: column;
+			justify-content: center; /*水平居中*/
+			align-items: center; /*垂直居中*/
+			position: fixed; /* 通过 "fixed" 属性使得元素脱离文档流 */
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			overflow-y: scroll;
+        }
+
+        .file-upload {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+            height: 40px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            color: #495057;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-upload:hover {
+            background-color: #e2e6ea;
+        }
+
+        .selected-file {
+            margin: 10px;
+            font-weight: bold;
+        }
+
+        .btn-upload {
+            width: 100%;
+        }
+		
+		.url-container {
+			padding: 10px;
+			background-color: #f2f2f2;
+			border: 1px solid #ccc;
+			margin-bottom: 10px;
+			display: none; /* 默认隐藏 */
+		}
+
+		.url-container.show {
+			display: block; /* 显示 */
+			border-radius: 15px;
+		}
+		
+		.url-text {
+			margin-top: 10px;
+			background-color: #f9f9f9;
+			border: 1px solid #ccc;
+			padding: 10px;
+			word-wrap: break-word;
+		}
+
+		.url-text button {
+			margin-top: 10px;
+			padding: 5px 10px;
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			cursor: pointer;
+		}
+		#urlText {
+				margin-top: 10px;
+				background-color: #f9f9f9;
+				border: 1px solid #ccc;
+				padding: 10px;
+				resize: none;
+				overflow: auto;
+				word-wrap: break-word;
+				width: 100%;
+				height: auto;
+			}
+
+		#copyButton {
+			margin-top: 10px;
+			padding: 5px 10px;
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			cursor: pointer;
+			border-radius: 10px;
+		}
+
+		#copySuccessMessage {
+			margin-top: 10px;
+			color: green;
+		}
+    </style>
+</head>
+<body>
+	<div>
+		<div class="containers">
+			<div id="selectedFile" class="selected-file"></div>
+			<form id="uploadForm" enctype="multipart/form-data" style="margin:10px;">
+				<div class="form-group">
+					<label for="file" class="btn btn-primary file-upload">
+						选择文件
+						<input type="file" id="file" name="file" onchange="displayFileName()">
+					</label>
+				</div>
+				<button type="submit" class="btn btn-primary btn-upload" style="margin-top: 10px;">上传</button>
+			</form>
+			<div id="container" style="margin-top:20px;word-wrap: break-word;max-width: 90%;max-height: 60%;">
+				<div class="url-container" id="urlContainer">
+					<textarea id="urlText" style="border-radius: 10px;" readonly></textarea>
+					<button id="copyButton">复制 URL</button>
+					<div id="copySuccessMessage"></div>
+					<img id="urlImage" src="" alt="" style="max-width: 100%;border-radius: 15px;">
+				</div>
+			</div>
+			<div id="status"></div>
+			<p>由一铭API提供服务</p>
+			<p><a id="btn btn-link" href="https://api.wer.plus">api.wer.plus</a></p>
+		</div>
+	</div>
+
+    <script>
+        function displayFileName() {
+            var fileInput = document.getElementById('file');
+            var fileName = fileInput.files[0].name;
+            document.getElementById('selectedFile').textContent = '已选择文件: ' + fileName;
+        }
+
+        document.getElementById('uploadForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var fileInput = document.getElementById('file');
+            var file = fileInput.files[0];
+
+            if (!file) {
+                alert('请选择文件!');
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('file', file);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://api.wer.plus/api/wbmap');
+            xhr.onload = function () {
+			if (xhr.status === 200) {
+				var response = JSON.parse(xhr.responseText);
+				if (response.code === 200) {
+					var url = response.url;
+
+					// 显示框和图像的显示状态
+					var urlContainer = document.getElementById('urlContainer');
+					var urlText = document.getElementById('urlText');
+					var urlImage = document.getElementById('urlImage');
+
+					urlText.textContent = url; // 设置显示框的文本内容
+					urlImage.src = url; // 设置图像的 URL
+
+					urlContainer.classList.add('show'); // 添加 show 类以显示显示框
+
+				} else {
+					alert
+					console.error('请求失败. 错误代码: ' + response.code);
+				}
+			} else {
+				console.error('请求失败. 状态码: ' + xhr.status);
+			}
+		};
+            xhr.send(formData);
+        });
+		var copyButton = document.getElementById('copyButton');
+		copyButton.addEventListener('click', function() {
+			var urlText = document.getElementById('urlText');
+			var range = document.createRange();
+			range.selectNode(urlText);
+			window.getSelection().removeAllRanges();
+			window.getSelection().addRange(range);
+			document.execCommand('copy');
+			window.getSelection().removeAllRanges();
+		});
+		var copyButton = document.getElementById('copyButton');
+		var urlText = document.getElementById('urlText');
+		var copySuccessMessage = document.getElementById('copySuccessMessage');
+
+		copyButton.addEventListener('click', function() {
+			urlText.select();
+			document.execCommand('copy');
+			copySuccessMessage.innerHTML = 'URL 已成功复制！';
+		});
+
+		// 清除复制成功提示信息
+		urlText.addEventListener('input', function() {
+			copySuccessMessage.innerHTML = '';
+		});
+    </script>
+
+</body>
+</html>
