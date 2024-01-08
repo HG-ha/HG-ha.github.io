@@ -1,228 +1,257 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在线免费图床接口 - API演示</title>
-	<!-- 引入 Bootstrap CSS -->
-	<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.0/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-			width:100%;
-			overflow-y: auto;
-        }
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>镜芯API - 演示站点</title>
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
 
-        .containers {
-            margin: 0 auto;
-            text-align: center;
-			display: flex;
-			flex-direction: column;
-			justify-content: center; /*水平居中*/
-			align-items: center; /*垂直居中*/
-			position: fixed; /* 通过 "fixed" 属性使得元素脱离文档流 */
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			overflow-y: scroll;
-        }
-
-        .file-upload {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            width: 100%;
-            height: 40px;
-            border-radius: 4px;
-            background-color: #f8f9fa;
-            color: #495057;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .file-upload input[type="file"] {
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .file-upload:hover {
-            background-color: #e2e6ea;
-        }
-
-        .selected-file {
-            margin: 10px;
-            font-weight: bold;
-        }
-
-        .btn-upload {
-            width: 100%;
-        }
-		
-		.url-container {
-			padding: 10px;
-			background-color: #f2f2f2;
-			border: 1px solid #ccc;
-			margin-bottom: 10px;
-			display: none; /* 默认隐藏 */
-		}
-
-		.url-container.show {
-			display: block; /* 显示 */
-			border-radius: 15px;
-		}
-		
-		.url-text {
-			margin-top: 10px;
-			background-color: #f9f9f9;
-			border: 1px solid #ccc;
-			padding: 10px;
-			word-wrap: break-word;
-		}
-
-		.url-text button {
-			margin-top: 10px;
-			padding: 5px 10px;
-			background-color: #4CAF50;
-			color: white;
-			border: none;
-			cursor: pointer;
-		}
-		#urlText {
-				margin-top: 10px;
-				background-color: #f9f9f9;
-				border: 1px solid #ccc;
-				padding: 10px;
-				resize: none;
-				overflow: auto;
-				word-wrap: break-word;
-				width: 100%;
-				height: auto;
-			}
-
-		#copyButton {
-			margin-top: 10px;
-			padding: 5px 10px;
-			background-color: #4CAF50;
-			color: white;
-			border: none;
-			cursor: pointer;
-			border-radius: 10px;
-		}
-
-		#copySuccessMessage {
-			margin-top: 10px;
-			color: green;
-		}
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
 </head>
+
 <body>
-	<div>
-		<div class="containers">
-			<div id="selectedFile" class="selected-file"></div>
-			<form id="uploadForm" enctype="multipart/form-data" style="margin:10px;">
-				<div class="form-group">
-					<label for="file" class="btn btn-primary file-upload">
-						选择文件
-						<input type="file" id="file" name="file" onchange="displayFileName()">
-					</label>
-				</div>
-				<button type="submit" class="btn btn-primary btn-upload" style="margin-top: 10px;">上传</button>
-			</form>
-			<div id="container" style="margin-top:20px;word-wrap: break-word;max-width: 90%;max-height: 60%;">
-				<div class="url-container" id="urlContainer">
-					<textarea id="urlText" style="border-radius: 10px;" readonly></textarea>
-					<button id="copyButton">复制 URL</button>
-					<div id="copySuccessMessage"></div>
-					<img id="urlImage" src="" alt="" style="max-width: 100%;border-radius: 15px;">
-				</div>
-			</div>
-			<div id="status"></div>
-			<p>由一铭API提供服务</p>
-			<p><a id="btn btn-link" href="https://api.wer.plus">api.wer.plus</a></p>
-		</div>
-	</div>
+    <!-- 顶部菜单 -->
+    <div class="mx-1 mt-1 fixed-top shadow-sm mb-2 bg-body-tertiary rounded">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="mx-3" href="https://github.com/HG-ha" target="_blank">
+                    <img src="https://ldbbs.ldmnq.com/bbs/topic/images/2024-1/3773d225-8b76-49ca-be1d-9dc96c82f7f3.png"
+                        alt="Bootstrap" style="height: 30px;width: 30px; border-radius: 15px;">
+                </a>
+                <a class="navbar-brand" href="#">镜芯API - 演示站点</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">主页</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://siriusbot.cn">官网</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://api.wer.plus">一铭API</a>
+                        </li>
+                    </ul>
+                    <form class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success" type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-search" viewBox="0 0 16 16">
+                                <path
+                                    d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </div>
 
-    <script>
-        function displayFileName() {
-            var fileInput = document.getElementById('file');
-            var fileName = fileInput.files[0].name;
-            document.getElementById('selectedFile').textContent = '已选择文件: ' + fileName;
-        }
+    <!-- 轮播图 -->
+    <div class="container" style="padding-top: 80px;">
+        <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active"
+                    aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1"
+                    aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2"
+                    aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <a href="https://curl.qcloud.com/NVoWR2Ae" target="_blank">
+                        <!-- 轮播图要求470x250 -->
+                        <img src="https://ldbbs.ldmnq.com/bbs/topic/images/2024-1/f48bbdb8-227b-4e98-8ca3-c491405df6b9.png"
+                            class="d-block mx-auto" alt="【腾讯云】年度爆款2核2G4M云服务器118元/年，新老用户同享" style="max-height:180px;">
+                        <div class="carousel-caption d-none d-md-block">
+                            <!-- <p>【腾讯云】年度爆款2核2G4M云服务器118元/年，新老用户同享</p> -->
+                        </div>
+                    </a>
+                </div>
+                <div class="carousel-item">
+                    <a href="https://curl.qcloud.com/8TsTTCIz" target="_blank">
+                        <img src="https://ldbbs.ldmnq.com/bbs/topic/images/2024-1/58fc955f-1b82-4cca-969c-199114ecf11e.png"
+                            class="d-block mx-auto" alt="【腾讯云】云服务器、云数据库、COS、CDN、短信等云产品特惠热卖中" style="max-height:180px;">
+                        <div class="carousel-caption d-none d-md-block">
+                            <!-- <p>【腾讯云】云服务器、云数据库、COS、CDN、短信等云产品特惠热卖中</p> -->
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions"
+                data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions"
+                data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
 
-        document.getElementById('uploadForm').addEventListener('submit', function (event) {
-            event.preventDefault();
+    <!-- 工具列 -->
+    <div id="tools" class="container text-center mt-4">
 
-            var fileInput = document.getElementById('file');
-            var file = fileInput.files[0];
+        <a href="https://hg-ha.github.io/app/icpb" class="btn btn-outline-secondary pd-2 mt-2"
+            style="text-decoration: none;max-width: 360px;">
+            ICP备案查询
+            <span class="badge text-bg-success">推荐</span>
+            <figure class="text-start mt-2">
+                <blockquote class="blockquote">
+                    <span>通过工业和信息化部政务服务平台进行实时ICP信息查询</span>
+                </blockquote>
+            </figure>
+            <figure class="text-end">
+                <figcaption class="blockquote-footer">
+                    <cite title="Source Title">Yiming</cite>
+                </figcaption>
+            </figure>
+        </a>
 
-            if (!file) {
-                alert('请选择文件!');
-                return;
-            }
+        <a href="https://hg-ha.github.io/app/wbmap" class="btn btn-outline-secondary pd-2 mt-2"
+            style="text-decoration: none;max-width: 360px;">
+            在线图床
+            <span class="badge text-bg-success">推荐</span>
+            <figure class="text-start mt-2">
+                <blockquote class="blockquote">
+                    <span>将图片转为URL，URL长期有效，请勿上传敏感图片，最大允许2M</span>
+                </blockquote>
+            </figure>
+            <figure class="text-end">
+                <figcaption class="blockquote-footer">
+                    <cite title="Source Title">Yiming</cite>
+                </figcaption>
+            </figure>
+        </a>
 
-            var formData = new FormData();
-            formData.append('file', file);
+        <a href="https://hg-ha.github.io/app/wytop" class="btn btn-outline-secondary pd-2 mt-2"
+            style="text-decoration: none;max-width: 360px;">
+            网易云音乐排行榜
+            <span class="badge text-bg-success">推荐</span>
+            <figure class="text-start mt-2">
+                <blockquote class="blockquote">
+                    <span>实时预览网易云音乐排行榜，可以在线播放</span>
+                </blockquote>
+            </figure>
+            <figure class="text-end">
+                <figcaption class="blockquote-footer">
+                    <cite title="Source Title">Yiming</cite>
+                </figcaption>
+            </figure>
+        </a>
 
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'https://api.wer.plus/api/wbmap');
-            xhr.onload = function () {
-			if (xhr.status === 200) {
-				var response = JSON.parse(xhr.responseText);
-				if (response.code === 200) {
-					var url = response.url;
+        <a href="https://hg-ha.github.io/app/webprtsc" class="btn btn-outline-secondary pd-2 mt-2"
+            style="text-decoration: none;max-width: 360px;">
+            在线网页截图
+            <span class="badge text-bg-success">推荐</span>
+            <figure class="text-start mt-2">
+                <blockquote class="blockquote">
+                    <span>对网页进行截图，支持设定设备类型以及窗口大小，支持搜索（xpath）元素截图</span>
+                </blockquote>
+            </figure>
+            <figure class="text-end">
+                <figcaption class="blockquote-footer">
+                    <cite title="Source Title">Yiming</cite>
+                </figcaption>
+            </figure>
+        </a>
 
-					// 显示框和图像的显示状态
-					var urlContainer = document.getElementById('urlContainer');
-					var urlText = document.getElementById('urlText');
-					var urlImage = document.getElementById('urlImage');
+        <a href="https://hg-ha.github.io/app/baiduautocomp" class="btn btn-outline-secondary pd-2 mt-2"
+            style="text-decoration: none;max-width: 360px;">
+            百度搜索自动补全
+            <span class="badge text-bg-success">推荐</span>
+            <figure class="text-start mt-2">
+                <blockquote class="blockquote">
+                    <span>基于百度搜索引擎接口，提供热度最高的相关搜索词，可以用于搜索内容的自动补全</span>
+                </blockquote>
+            </figure>
+            <figure class="text-end">
+                <figcaption class="blockquote-footer">
+                    <cite title="Source Title">Yiming</cite>
+                </figcaption>
+            </figure>
+        </a>
 
-					urlText.textContent = url; // 设置显示框的文本内容
-					urlImage.src = url; // 设置图像的 URL
+        <a href="https://hg-ha.github.io/app/bingautocomp" class="btn btn-outline-secondary pd-2 mt-2"
+            style="text-decoration: none;max-width: 360px;">
+            Bing搜索自动补全
+            <span class="badge text-bg-success">推荐</span>
+            <figure class="text-start mt-2">
+                <blockquote class="blockquote">
+                    <span>基于Bing搜索引擎接口，提供热度最高的相关搜索词，可以用于搜索内容的自动补全</span>
+                </blockquote>
+            </figure>
+            <figure class="text-end">
+                <figcaption class="blockquote-footer">
+                    <cite title="Source Title">Yiming</cite>
+                </figcaption>
+            </figure>
+        </a>
 
-					urlContainer.classList.add('show'); // 添加 show 类以显示显示框
+        <a href="https://hg-ha.github.io/app/translate" class="btn btn-outline-secondary pd-2 mt-2"
+            style="text-decoration: none;max-width: 360px;">
+            Bing智能翻译
+            <span class="badge text-bg-success">推荐</span>
+            <figure class="text-start mt-2">
+                <blockquote class="blockquote">
+                    <span>基于Bing翻译接口，支持多语言互相翻译，自动检测语言</span>
+                </blockquote>
+            </figure>
+            <figure class="text-end">
+                <figcaption class="blockquote-footer">
+                    <cite title="Source Title">Yiming</cite>
+                </figcaption>
+            </figure>
+        </a>
 
-				} else {
-					alert
-					console.error('请求失败. 错误代码: ' + response.code);
-				}
-			} else {
-				console.error('请求失败. 状态码: ' + xhr.status);
-			}
-		};
-            xhr.send(formData);
-        });
-		var copyButton = document.getElementById('copyButton');
-		copyButton.addEventListener('click', function() {
-			var urlText = document.getElementById('urlText');
-			var range = document.createRange();
-			range.selectNode(urlText);
-			window.getSelection().removeAllRanges();
-			window.getSelection().addRange(range);
-			document.execCommand('copy');
-			window.getSelection().removeAllRanges();
-		});
-		var copyButton = document.getElementById('copyButton');
-		var urlText = document.getElementById('urlText');
-		var copySuccessMessage = document.getElementById('copySuccessMessage');
+        <a href="https://hg-ha.github.io/app/itad" class="btn btn-outline-secondary pd-2 mt-2"
+            style="text-decoration: none;max-width: 360px;">
+            IP地址查询
+            <span class="badge text-bg-success">推荐</span>
+            <figure class="text-start mt-2">
+                <blockquote class="blockquote">
+                    <span>使用Geoip2获取IP地址地理位置信息</span>
+                </blockquote>
+            </figure>
+            <figure class="text-end">
+                <figcaption class="blockquote-footer">
+                    <cite title="Source Title">Yiming</cite>
+                </figcaption>
+            </figure>
+        </a>
 
-		copyButton.addEventListener('click', function() {
-			urlText.select();
-			document.execCommand('copy');
-			copySuccessMessage.innerHTML = 'URL 已成功复制！';
-		});
+        <a href="https://hg-ha.github.io/app/hpic" class="btn btn-outline-secondary pd-2 mt-2"
+            style="text-decoration: none;max-width: 360px;">
+            图片压缩
+            <span class="badge text-bg-success">推荐</span>
+            <figure class="text-start mt-2">
+                <blockquote class="blockquote">
+                    <span>自动识别图片类型并进行压缩，支持JPG、PNG、WEBP，最大2M</span>
+                </blockquote>
+            </figure>
+            <figure class="text-end">
+                <figcaption class="blockquote-footer">
+                    <cite title="Source Title">Yiming</cite>
+                </figcaption>
+            </figure>
+        </a>
+    </div>
+    <div class="text-center p-3 mt-5">
+        <h6 class="text-dark">接口服务由&nbsp;<a href="https://api.wer.plus" target="_blank">镜芯API</a>&nbsp;提供</h6>
+    </div>
+    <!-- 引用bootstrap -->
+    <script src="static/js/bootstrap.bundle.min.js"></script>
 
-		// 清除复制成功提示信息
-		urlText.addEventListener('input', function() {
-			copySuccessMessage.innerHTML = '';
-		});
-    </script>
-
+    <!-- 引用highlight -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script> -->
 </body>
+
 </html>
