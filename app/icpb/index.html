@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ICP备案查询</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
+    <style>
+        body {
+            min-height: 100vh;
+            /* 使内容区域至少占满整个视口高度 */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            flex: 1;
+            /* 占据剩余的空间 */
+        }
+
+        .no-wrap {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center mt-5">ICP备案查询</h1>
+        <div class="input-group mb-3 mt-5">
+            <input id="query_value" type="text" class="form-control" placeholder="二级域名、主体名称、备案号、应用名称"
+                aria-label="domain_name" aria-describedby="button-addon2">
+            <button class="btn btn-outline-secondary" type="button" id="button-addon2"
+                onclick="getIcpInfo()">查询</button>
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-text">
+                <input id="ontoken" class="form-check-input mt-0" type="checkbox" value=""
+                    aria-label="Checkbox for following text input">
+            </div>
+            <span class="input-group-text" id="inputGroup-sizing-sm">token</span>
+            <input id="tokenvalue" type="text" class="form-control" aria-label="tokenvalue">
+        </div>
+        <div id="query_type" class="container text-left">
+            <input type="radio" class="btn-check" name="query_options" id="web" autocomplete="off" checked>
+            <label class="btn btn-outline-success mt-2" for="web">网站</label>
+
+            <input type="radio" class="btn-check" name="query_options" id="app" autocomplete="off">
+            <label class="btn btn-outline-success mt-2" for="app">APP</label>
+
+            <input type="radio" class="btn-check" name="query_options" id="mapp" autocomplete="off">
+            <label class="btn btn-outline-success mt-2" for="mapp">小程序</label>
+
+            <input type="radio" class="btn-check" name="query_options" id="kapp" autocomplete="off">
+            <label class="btn btn-outline-success mt-2" for="kapp">快应用</label>
+
+            <input type="radio" class="btn-check" name="query_options" id="bweb" autocomplete="off">
+            <label class="btn btn-outline-success mt-2" for="bweb">违规网站</label>
+
+            <input type="radio" class="btn-check" name="query_options" id="bapp" autocomplete="off">
+            <label class="btn btn-outline-success mt-2" for="bapp">违规APP</label>
+
+            <input type="radio" class="btn-check" name="query_options" id="bmapp" autocomplete="off">
+            <label class="btn btn-outline-success mt-2" for="bmapp">违规小程序</label>
+
+            <input type="radio" class="btn-check" name="query_options" id="bkapp" autocomplete="off">
+            <label class="btn btn-outline-success mt-2" for="bkapp">违规快应用</label>
+        </div>
+    </div>
+    <div class="container text-center">
+        <!-- 加载效果 -->
+        <div class="container mt-3 me-3 ms-3" style="display: none;" id="netload">
+            <button class="btn btn-primary">
+                <span class="spinner-border spinner-border-sm"></span>
+                Loading..
+            </button>
+        </div>
+        <!-- 消息框 -->
+        <div id="liveAlertPlaceholder" class="mt-2 mt-3"></div>
+    </div>
+
+    <!-- 输出结果 -->
+    <div class="container text-left mt-3 content">
+        <div id="query_result" class="table-responsive"></div>
+<!--         <pre><code id="jsonOutput" class="json"></code></pre> -->
+    </div>
+
+    <!-- 版权 -->
+    <div class="text-center p-3 mt-auto">
+        <h6 class="text-dark">接口服务由&nbsp;<a href="https://api.wer.plus" target="_blank">镜芯API</a>&nbsp;提供</h6>
+        <h6 class="text-dark">项目地址&nbsp;<a href="https://github.com/HG-ha/ICP_Query" target="_blank">ICP_Query</a></h6>
+        <h6 class="text-dark">使用完整接口功能请自行部署项目，该页面仅供测试</h6>
+    </div>
+
+    <!-- 引用bootstrap -->
+    <!-- 5.3.0js部分问题，暂时引用低版本 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+
+    <!-- 引用highlight -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+
+    <!-- 提交查询数据 -->
+    <script>
+        function getIcpInfo() {
+            // 获取输入数据
+            var query_value = document.getElementById("query_value").value;
+            // 判断是否使用token
+            var ontoken = document.getElementById("ontoken").checked;
+            // 限制每次一条数据
+            var query_url = `https://api.wer.plus/api/icpb?t=${query_value}&b=${selectedOption}&pageSize=1`;
+            if (!query_value || !selectedOption) {
+                eralert("请输入要查询的内容");
+                return;
+            }
+            if (ontoken) {
+                var token = document.getElementById("tokenvalue").value;
+                if (!token) {
+                    eralert("请输入token");
+                    return;
+                }
+                query_url = `${query_url}&token=${token}`;
+            }
+
+            console.log(query_url);
+            http('GET', query_url)
+                .then(function (data) {
+                    console.log(data);
+                    var jsonData = JSON.parse(data);
+                    if (jsonData.params.list.length === 0) {
+                        sualert("未查询到相关数据");
+                        return;
+                    } else {
+                        sualert("查询成功");
+                        // var jsonPretty = JSON.stringify(data, null, 4);
+                        // document.getElementById("jsonOutput").innerHTML = `<pre>${jsonPretty}</pre>`;
+                        // hljs.highlightAll();
+                        var tables = document.createElement("table");
+                        tables.className = "table table-bordered";
+                        var talbes_head = document.createElement("thead");
+                        var head_row = document.createElement("tr");
+                        Object.keys(jsonData.params.list[0]).forEach(function (key) {
+                            var th = document.createElement("th");
+                            if (key in headerMapping) {
+                                th.textContent = headerMapping[key];
+                            } else {
+                                th.textContent = key;
+                            }
+                            th.scope = "col";
+                            th.className = "no-wrap";
+                            head_row.appendChild(th);
+                        });
+                        talbes_head.appendChild(head_row);
+                        tables.tHead = talbes_head;
+
+                        var talbes_body = document.createElement("tbody");
+                        jsonData.params.list.forEach(function (item) {
+                            var body_tr = document.createElement("tr");
+                            Object.keys(item).forEach(function (values) {
+                                var td = document.createElement("td");
+                                td.textContent = item[values];
+                                td.className = "no-wrap";
+                                body_tr.appendChild(td);
+                            })
+                            talbes_body.appendChild(body_tr);
+                        });
+                        tables.appendChild(talbes_body);
+                        var result_div = document.getElementById("query_result");
+                        result_div.innerHTML = '';
+                        result_div.appendChild(tables);
+                    }
+                })
+                .catch(function (error) {
+                    eralert(error);
+                    console.log(error);
+                })
+        }
+
+    </script>
+
+    <!-- 工具封装 -->
+    <script>
+        // 加载框
+        const netload = document.getElementById('netload');
+        // 消息框
+        const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
+        const alert = (message, type) => {
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = [
+                `<div class="alert alert-${type} alert-dismissible fade show" role="alert">`,
+                `   <div>${message}</div>`,
+                '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+                '</div>'
+            ].join('');
+            alertPlaceholder.append(wrapper);
+            setTimeout(() => {
+                const closeButton = wrapper.querySelector('[aria-label="Close"]');
+                closeButton.click();
+            }, 3000);
+        }
+
+        // 封装一下错误消息
+        const eralert = (message) => {
+            alert(message, 'danger');
+        }
+        // 成功消息
+        const sualert = (message) => {
+            alert(message, 'success');
+        }
+
+        // 网络工具包
+        function http(type, url, data, header) {
+            netload.style.display = 'block';
+            return new Promise(function (resolve, reject) {
+                var xhr = new XMLHttpRequest();
+                xhr.open(type, url);
+                if (header) {
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                }
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        netload.style.display = 'none';
+                        resolve(xhr.responseText); // 将响应文本作为参数传递给 resolve 方法
+                    } else {
+                        netload.style.display = 'none';
+                        reject(new Error(xhr.statusText)); // 创建并返回一个新的 Error 对象
+                    }
+                };
+                xhr.onerror = function () {
+                    netload.style.display = 'none';
+                    reject(new Error("Network Error")); // 创建并返回一个新的 Error 对象
+                };
+                if (!data) {
+                    xhr.send();
+                } else {
+                    xhr.send(data);
+                }
+            });
+        }
+    </script>
+
+    <!-- 查询类型监听 -->
+    <script>
+        // 存储选中按钮
+        var selectedOption = 'web';
+        // 获取所有的 radio 按钮
+        var radioButtons = document.querySelectorAll('#query_type input[type="radio"]');
+
+        // 添加事件监听器
+        radioButtons.forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                // 更新全局变量的值
+                selectedOption = document.querySelector('input[name="query_options"]:checked').id;
+            });
+        });
+    </script>
+
+    <script>
+        const headerMapping = {
+            "contentTypeName": "前置审批项",
+            "domain": "域名",
+            "domainId": "域名ID",
+            "leaderName": "负责人",
+            "limitAccess": "限制接入",
+            "mainId": "主体ID",
+            "mainLicence": "主体备案许可证号",
+            "natureName": "主办单位性质",
+            "serviceId": "备案ID",
+            "serviceLicence": "备案许可证号",
+            "unitName": "主办单位名称",
+            "updateRecordTime": "审核通过日期",
+            "cityId": "城市ID",
+            "countyId": "区县ID",
+            "mainUnitAddress": "主体通信地址",
+            "mainUnitCertNo": "主体证书编号",
+            "mainUnitCertType": "主体证书类型",
+            "natureId": "主办单位性质ID",
+            "provinceId": "邮政编码",
+            "contentTypeName": "内容类型",
+            "serviceName": "应用名称"
+        };
+    </script>
+
+</body>
+
+</html>
