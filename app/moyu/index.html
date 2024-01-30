@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>摸鱼日报</title>
+	<!-- 引入 Bootstrap CSS -->
+	<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.0/css/bootstrap.min.css">
+	<style>
+		body {
+			background-color: #f8f9fa;
+			width: 100%;
+			overflow-y: auto;
+		}
+
+		.containers {
+			margin: 0 auto;
+			text-align: center;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			/*水平居中*/
+			align-items: center;
+			/*垂直居中*/
+			position: fixed;
+			/* 通过 "fixed" 属性使得元素脱离文档流 */
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			overflow-y: scroll;
+		}
+
+		.file-upload {
+			position: relative;
+			overflow: hidden;
+			display: inline-block;
+			width: 100%;
+			height: 40px;
+			border-radius: 4px;
+			background-color: #f8f9fa;
+			color: #495057;
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+		}
+
+		.file-upload input[type="file"] {
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			opacity: 0;
+			cursor: pointer;
+		}
+
+		.file-upload:hover {
+			background-color: #e2e6ea;
+		}
+
+		.selected-file {
+			margin: 10px;
+			font-weight: bold;
+		}
+
+		.btn-upload {
+			width: 100%;
+		}
+
+		.url-container {
+			padding: 10px;
+			background-color: #f2f2f2;
+			border: 1px solid #ccc;
+			margin-bottom: 10px;
+			display: none;
+			/* 默认隐藏 */
+		}
+
+		.url-container.show {
+			display: block;
+			/* 显示 */
+			border-radius: 15px;
+		}
+
+		.url-text {
+			margin-top: 10px;
+			background-color: #f9f9f9;
+			border: 1px solid #ccc;
+			padding: 10px;
+			word-wrap: break-word;
+		}
+
+		.url-text button {
+			margin-top: 10px;
+			padding: 5px 10px;
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			cursor: pointer;
+		}
+
+		#urlText {
+			margin-top: 10px;
+			background-color: #f9f9f9;
+			border: 1px solid #ccc;
+			padding: 10px;
+			resize: none;
+			overflow: auto;
+			word-wrap: break-word;
+			width: 100%;
+			height: auto;
+		}
+
+		#copyButton {
+			margin-top: 10px;
+			padding: 5px 10px;
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			cursor: pointer;
+			border-radius: 10px;
+		}
+
+		#newimg {
+			margin-top: 10px;
+			padding: 5px 10px;
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			cursor: pointer;
+			border-radius: 10px;
+		}
+
+
+		#copySuccessMessage {
+			margin-top: 10px;
+			color: green;
+		}
+	</style>
+	<script>
+		var _hmt = _hmt || [];
+		(function () {
+			var hm = document.createElement("script");
+			hm.src = "https://hm.baidu.com/hm.js?067f19ed386c3e565358409d2102becc";
+			var s = document.getElementsByTagName("script")[0];
+			s.parentNode.insertBefore(hm, s);
+		})();
+	</script>
+</head>
+
+<body>
+	<div>
+		<div class="containers">
+			<div id="container" style="margin-top:20px;word-wrap: break-word;max-width: 90%;max-height: 90%;">
+				<img id="urlImage" src="" alt="" style="max-width: 100%;border-radius: 15px;">
+				<button id="newimg">换一张</button>
+				<button id="copyButton">复制图片地址</button>
+			</div>
+			<div id="status"></div>
+			<p>由一铭API提供服务</p>
+			<p><a id="btn btn-link" href="https://api.wer.plus">api.wer.plus</a></p>
+		</div>
+	</div>
+
+	<script>
+		var newimg = document.getElementById('newimg');
+		var newimgurl;
+		newimg.addEventListener('click', function () {
+			getnew();
+		});
+		function getnew() {
+			http('GET', "https://api.wer.plus/api/moyu")
+				.then(function (data) {
+					var jsonData = JSON.parse(data);
+					newimgurl = jsonData.moyu_share_url;
+					document.getElementById("urlImage").src = newimgurl;
+				}).catch(function (error) {
+					console.log(error);
+				})
+		}
+		var copyButton = document.getElementById('copyButton');
+		copyButton.addEventListener('click', function () {
+			var tempTextarea = document.createElement("textarea");
+			tempTextarea.value = newimgurl;
+			document.body.appendChild(tempTextarea);
+			tempTextarea.select();
+			document.execCommand("copy");
+			document.body.removeChild(tempTextarea);
+		});
+	</script>
+	<script>
+		getnew();
+		function http(type, url, data, header) {
+			return new Promise(function (resolve, reject) {
+				var xhr = new XMLHttpRequest();
+				xhr.open(type, url);
+				if (header) {
+					xhr.setRequestHeader('Content-Type', 'application/json');
+				}
+				xhr.onload = function () {
+					if (xhr.status === 200) {
+						resolve(xhr.responseText); // 将响应文本作为参数传递给 resolve 方法
+					} else {
+						reject(new Error(xhr.statusText)); // 创建并返回一个新的 Error 对象
+					}
+				};
+				xhr.onerror = function () {
+					reject(new Error("Network Error")); // 创建并返回一个新的 Error 对象
+				};
+				if (!data) {
+					xhr.send();
+				} else {
+					xhr.send(data);
+				}
+			});
+		}
+	</script>
+
+</body>
+
+</html>
