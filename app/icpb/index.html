@@ -95,7 +95,7 @@
     <!-- 输出结果 -->
     <div class="container text-left mt-3 content">
         <div id="query_result" class="table-responsive"></div>
-<!--         <pre><code id="jsonOutput" class="json"></code></pre> -->
+        <pre><code id="jsonOutput" class="json"></code></pre>
     </div>
 
     <!-- 版权 -->
@@ -148,7 +148,7 @@
                         sualert("查询成功");
                         // var jsonPretty = JSON.stringify(data, null, 4);
                         // document.getElementById("jsonOutput").innerHTML = `<pre>${jsonPretty}</pre>`;
-                        // hljs.highlightAll();
+                        hljs.highlightAll();
                         var tables = document.createElement("table");
                         tables.className = "table table-bordered";
                         var talbes_head = document.createElement("thead");
