@@ -28,11 +28,11 @@
     </style>
     <script>
         var _hmt = _hmt || [];
-        (function() {
-          var hm = document.createElement("script");
-          hm.src = "https://hm.baidu.com/hm.js?067f19ed386c3e565358409d2102becc";
-          var s = document.getElementsByTagName("script")[0]; 
-          s.parentNode.insertBefore(hm, s);
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?067f19ed386c3e565358409d2102becc";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
         })();
     </script>
 </head>
@@ -100,8 +100,8 @@
 
     <!-- 版权 -->
     <div class="text-center p-3 mt-auto">
-        <h6 class="text-dark">接口服务由&nbsp;<a href="https://api.wer.plus" target="_blank">镜芯API</a>&nbsp;提供</h6>
-        <h6 class="text-dark">项目地址&nbsp;<a href="https://github.com/HG-ha/ICP_Query" target="_blank">ICP_Query</a></h6>
+        <h6 class="text-dark">接口服务由&nbsp;<a href="https://api.wer.plus" target="_blank">镜芯API</a>&nbsp;提供，项目地址&nbsp;<a
+                href="https://github.com/HG-ha/ICP_Query" target="_blank">ICP_Query</a></h6>
         <h6 class="text-dark">使用完整接口功能请自行部署项目，该页面仅供测试</h6>
     </div>
 
@@ -141,14 +141,14 @@
                 .then(function (data) {
                     console.log(data);
                     var jsonData = JSON.parse(data);
+                    var jsonPretty = JSON.stringify(jsonData, null, 4);
+                    document.getElementById("jsonOutput").innerHTML = `<pre>${jsonPretty}</pre>`;
+                    hljs.highlightAll();
                     if (jsonData.params.list.length === 0) {
                         sualert("未查询到相关数据");
                         return;
                     } else {
                         sualert("查询成功");
-                        // var jsonPretty = JSON.stringify(data, null, 4);
-                        // document.getElementById("jsonOutput").innerHTML = `<pre>${jsonPretty}</pre>`;
-                        hljs.highlightAll();
                         var tables = document.createElement("table");
                         tables.className = "table table-bordered";
                         var talbes_head = document.createElement("thead");
