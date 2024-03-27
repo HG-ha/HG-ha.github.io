@@ -52,7 +52,7 @@
                     aria-label="Checkbox for following text input">
             </div>
             <span class="input-group-text" id="inputGroup-sizing-sm">token</span>
-            <input id="tokenvalue" type="text" class="form-control" aria-label="tokenvalue" placeholder="没有不填">
+            <input id="tokenvalue" type="text" class="form-control" aria-label="tokenvalue" placeholder="无token时查询次数将受到限制">
         </div>
         <div id="query_type" class="container text-left">
             <input type="radio" class="btn-check" name="query_options" id="web" autocomplete="off" checked>
@@ -237,7 +237,7 @@
                         resolve(xhr.responseText); // 将响应文本作为参数传递给 resolve 方法
                     } else {
                         netload.style.display = 'none';
-                        reject(new Error(xhr.statusText)); // 创建并返回一个新的 Error 对象
+                        reject(new Error(xhr.responseText)); // 创建并返回一个新的 Error 对象
                     }
                 };
                 xhr.onerror = function () {
