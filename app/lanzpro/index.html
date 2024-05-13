@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>镜芯API - 蓝奏云优享版直链解析</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
+    <style>
+        body {
+            min-height: 100vh;
+            /* 使内容区域至少占满整个视口高度 */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            flex: 1;
+            /* 占据剩余的空间 */
+        }
+
+        .no-wrap {
+            white-space: nowrap;
+        }
+    </style>
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?067f19ed386c3e565358409d2102becc";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center mt-5">蓝奏云优享版直连解析</h1>
+        <div class="input-group mb-3 mt-5">
+            <input id="url" type="text" class="form-control" placeholder="链接"
+                aria-label="domain_name" aria-describedby="button-addon2">
+                <input id="pwd" type="text" class="form-control" placeholder="密码，没有不填"
+                aria-label="domain_name" aria-describedby="button-addon2">
+            <button class="btn btn-outline-secondary" type="button" id="button-addon2"
+                onclick="getdownload()">解析</button>
+        </div>
+    </div>
+    <div class="container text-center">
+        <!-- 加载效果 -->
+        <div class="container mt-3 me-3 ms-3" style="display: none;" id="netload">
+            <button class="btn btn-primary">
+                <span class="spinner-border spinner-border-sm"></span>
+                Loading..
+            </button>
+        </div>
+        <!-- 消息框 -->
+        <div id="liveAlertPlaceholder" class="mt-2 mt-3"></div>
+    </div>
+
+    <!-- 输出结果 -->
+    <div class="container text-left mt-3 content">
+        <pre><code id="jsonOutput" class="json"></code></pre>
+    </div>
+
+    <!-- 版权 -->
+    <div class="text-center p-3 mt-auto">
+        <h6 class="text-dark">接口服务由&nbsp;<a href="https://api.wer.plus" target="_blank">镜芯API</a>提供</h6>
+    </div>
+
+    <!-- 引用bootstrap -->
+    <!-- 5.3.0js部分问题，暂时引用低版本 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+
+    <!-- 引用highlight -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+
+    <!-- 提交查询数据 -->
+    <script>
+        function getdownload() {
+            // 获取解析地址
+            var url = document.getElementById("url").value;
+            // 密码
+            var pwd = document.getElementById("pwd").value;
+            // 限制每次一条数据
+            var query_url = `https://api.wer.plus/api/lanzpro?url=${url}`;
+            if (!url) {
+                eralert("请输入解析地址");
+                return;
+            }
+            if (pwd) {
+                query_url = `${query_url}&pwd=${pwd}`;
+            }
+
+            console.log(query_url);
+            http('GET', query_url)
+                .then(function (data) {
+                    console.log(data);
+                    var jsonData = JSON.parse(data);
+                    var jsonPretty = JSON.stringify(jsonData, null, 4);
+                    document.getElementById("jsonOutput").innerHTML = `<pre>${jsonPretty}</pre>`;
+                    hljs.highlightAll();
+                    sualert("解析完成");
+                })
+                .catch(function (error) {
+                    eralert(error);
+                    console.log(error);
+                })
+        }
+
+    </script>
+
+    <!-- 工具封装 -->
+    <script>
+        // 加载框
+        const netload = document.getElementById('netload');
+        // 消息框
+        const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
+        const alert = (message, type) => {
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = [
+                `<div class="alert alert-${type} alert-dismissible fade show" role="alert">`,
+                `   <div>${message}</div>`,
+                '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+                '</div>'
+            ].join('');
+            alertPlaceholder.append(wrapper);
+            setTimeout(() => {
+                const closeButton = wrapper.querySelector('[aria-label="Close"]');
+                closeButton.click();
+            }, 3000);
+        }
+
+        // 封装一下错误消息
+        const eralert = (message) => {
+            alert(message, 'danger');
+        }
+        // 成功消息
+        const sualert = (message) => {
+            alert(message, 'success');
+        }
+
+        // 网络工具包
+        function http(type, url, data, header) {
+            netload.style.display = 'block';
+            return new Promise(function (resolve, reject) {
+                var xhr = new XMLHttpRequest();
+                xhr.open(type, url);
+                if (header) {
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                }
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        netload.style.display = 'none';
+                        resolve(xhr.responseText); // 将响应文本作为参数传递给 resolve 方法
+                    } else {
+                        netload.style.display = 'none';
+                        reject(new Error(xhr.responseText)); // 创建并返回一个新的 Error 对象
+                    }
+                };
+                xhr.onerror = function () {
+                    netload.style.display = 'none';
+                    reject(new Error("Network Error")); // 创建并返回一个新的 Error 对象
+                };
+                if (!data) {
+                    xhr.send();
+                } else {
+                    xhr.send(data);
+                }
+            });
+        }
+    </script>
+
+</body>
+
+</html>
