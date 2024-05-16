@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>镜芯API - AI换脸</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.0/css/bootstrap.min.css">
+    <style>
+        body {
+            min-height: 100vh;
+            /* 使内容区域至少占满整个视口高度 */
+            display: flex;
+            flex-direction: column;
+        }
+        @media (max-width: 768px) {
+            .image-preview {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?067f19ed386c3e565358409d2102becc";
+          var s = document.getElementsByTagName("script")[0]; 
+          s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+</head>
+<body>
+    <!-- 顶部菜单 -->
+    <div class="fixed-top shadow-sm mb-2 bg-body-tertiary rounded">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="mx-3" href="https://github.com/HG-ha" target="_blank">
+                    <img src="https://ldbbs.ldmnq.com/bbs/topic/images/2024-1/3773d225-8b76-49ca-be1d-9dc96c82f7f3.png"
+                        alt="Bootstrap" style="height: 30px;width: 30px; border-radius: 15px;">
+                </a>
+                <a class="navbar-brand" href="https://api.wer.plus">镜芯API - AI换脸
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                      </svg>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="https://hg-ha.github.io">主页</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://www.siriusbot.cn/">SiriusPro</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://api.wer.plus">镜芯API</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://afdian.net/a/yimin?tab=shop">商城</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+
+    <div class="container text-center" style="margin-top: 100px;">
+        <div class="image-preview">
+            <div class="container d-flex justify-content-center align-items-center flex-wrap flex-lg-nowrap">
+                <figure class="figure">
+                    <figure class="text-center">
+                        <blockquote class="blockquote">
+                            <p>原图</p>
+                        </blockquote>
+                        <figcaption class="blockquote-footer">
+                            假如你想把A的脸换到B上，那么这里选A
+                        </figcaption>
+                    </figure>
+                    <img id="source_url" src="https://n.sinaimg.cn/front20230110ac/777/w690h887/20230110/e04a-0ee1bae2e9445860cf48018b260b52af.jpg" class="shadow p-3 mb-5 bg-body-tertiary rounded figure-img img-fluid rounded" style="max-width: 65%;max-height: 50%;" alt="...">
+                    <figcaption class="figure-caption">
+                        <input type="file" id="source_input" style="display:none;" accept="image/*">
+                        <button type="button" class="btn btn-primary" onclick="document.getElementById('source_input').click();">选择源图</button>
+                    </figcaption>
+                </figure>
+
+                <figure id="result_img" class="figure" style="display: none;">
+                    <figure class="text-center">
+                        <blockquote class="blockquote">
+                            <p>人脸融合结果</p>
+                        </blockquote>
+                        <figcaption class="blockquote-footer">
+                            是的，这就是A的脸到B上
+                        </figcaption>
+                    </figure>
+                    <img id="result_url" src="" class="shadow p-3 mb-5 bg-body-tertiary rounded figure-img img-fluid rounded" style="max-width: 65%;max-height: 50%;" alt="...">
+                    <figcaption class="figure-caption">
+                        <button type="button" class="btn btn-primary" onclick="downloadFile()">保存</button>
+                        <button type="button" class="btn btn-primary" id="copyButton">复制图片链接</button>
+                    </figcaption>
+                </figure>
+
+                <figure class="figure">
+                    <figure class="text-center">
+                        <blockquote class="blockquote">
+                            <p>目标图片</p>
+                        </blockquote>
+                        <figcaption class="blockquote-footer">
+                            假如你想把A的脸换到B上，那么这里选B
+                        </figcaption>
+                    </figure>
+                    <img id="target_url" src="https://th.bing.com/th/id/R.23b5fb6a3a3ece6cb48075925809f112?rik=%2b2%2f7B0Na4Q%2f9Xw&riu=http%3a%2f%2fd.ifengimg.com%2fmw600%2fp1.ifengimg.com%2fa%2f2017_40%2f26bff92daddff6f_size33_w630_h807.jpg&ehk=Wem6oIE2OG6mW0G0NLruoyPlAS4VhWKwzlLqSdo53B4%3d&risl=&pid=ImgRaw&r=0" class="shadow p-3 mb-5 bg-body-tertiary rounded figure-img img-fluid rounded" style="max-width: 65%;max-height: 50%;" alt="...">
+                    <figcaption class="figure-caption">
+                        <input type="file" id="target_input" style="display:none;" accept="image/*">
+                        <button type="button" class="btn btn-primary" onclick="document.getElementById('target_input').click();">选择目标图片</button>
+                    </figcaption>
+                </figure>
+            </div>
+
+            <div class="container text-center">
+                <!-- 加载效果 -->
+                <div class="container mt-3 me-3 ms-3" style="display: none;" id="netload">
+                    <button class="btn btn-primary">
+                        <span class="spinner-border spinner-border-sm"></span>
+                        正在生成中
+                    </button>
+                </div>
+                <!-- 消息框 -->
+                <div id="liveAlertPlaceholder" class="mt-2 mt-3"></div>
+            </div>
+        
+            <div class="d-grid gap-2 col-6 mx-auto">
+                <button id="creat_task" class="btn btn-success" type="button">开始生成</button>
+            </div>
+
+            <div class="container">
+                <p>由一铭API提供服务</p>
+                <p><a id="btn btn-link" href="https://api.wer.plus">api.wer.plus</a></p>
+            </div>
+        </div>    
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+
+    <script>
+        var globalObject = {
+            sourceImage: null,
+            targetImage: null
+        };
+
+        document.getElementById('source_input').addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('source_url').src = e.target.result;
+                globalObject.sourceImage = file;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('target_input').addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('target_url').src = e.target.result;
+                globalObject.targetImage = file;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('creat_task').addEventListener('click', async function () {
+            var sourceUrl = '';
+            var targetUrl = '';
+            this.disabled = true;
+            netload.style.display = 'block';
+            sualert("开始人脸融合任务");
+            if (globalObject.sourceImage) {
+                // 上传源图像
+                try {
+                    const sourceUploadResult = await uploadImage(globalObject.sourceImage);
+                    if (!sourceUploadResult || !sourceUploadResult.url) {
+                        netload.style.display = 'none';
+                        eralert("源图像上传失败");
+                        throw new Error('源图像上传失败');
+                    }
+                    sourceUrl = sourceUploadResult.url;
+                } catch (error) {
+                    console.error(error);
+                    netload.style.display = 'none';
+                    eralert(error);
+                    return;
+                }
+            } else {
+                sourceUrl = document.getElementById('source_url').src;
+            }
+
+            if (globalObject.targetImage) {
+                // 上传目标图像
+                try {
+                    const targetUploadResult = await uploadImage(globalObject.targetImage);
+                    if (!targetUploadResult || !targetUploadResult.url) {
+                        netload.style.display = 'none';
+                        eralert("目标图像上传失败");
+                        throw new Error('目标图像上传失败');
+                    }
+                    targetUrl = targetUploadResult.url;
+                } catch (error) {
+                    console.error(error);
+                    netload.style.display = 'none';
+                    eralert(error);
+                    return;
+                }
+            } else {
+                targetUrl = document.getElementById('target_url').src;
+            }
+
+            try {
+                // 调用换脸API
+                await processFaceFusionTask(sourceUrl, targetUrl);
+                // const fusionResult = await processFaceFusionTask(sourceUrl, targetUrl);
+                // if (fusionResult.code === 200) {
+                //     // 成功处理逻辑
+                //     console.log('换脸任务成功:');
+                //     // 在这里可以更新页面，例如显示生成的换脸图像
+                // } else {
+                //     throw new Error('换脸任务失败: 错误代码 ' + fusionResult.code);
+                // }
+            } catch (error) {
+                console.error(error);
+                alert(error.message);
+            }
+        });
+
+        async function uploadImage(imageFile) {
+            return new Promise((resolve, reject) => {
+                var formData = new FormData();
+                formData.append('file', imageFile);
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'https://api.wer.plus/api/wbmap');
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.code === 200) {
+                            resolve(response);
+                        } else {
+                            reject(new Error('上传失败: 错误代码 ' + response.code));
+                        }
+                    } else {
+                        reject(new Error('上传失败: 状态码 ' + xhr.status));
+                    }
+                };
+                xhr.onerror = function () {
+                    reject(new Error('网络错误'));
+                };
+                xhr.send(formData);
+            });
+        }
+
+        async function createFaceFusionTask(sourceUrl, targetUrl) {
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    source_url: sourceUrl,
+                    traget_url: targetUrl
+                })
+            };
+
+            try {
+                const response = await fetch('https://api.wer.plus/api/facefusion', options);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data);
+                    return data;
+                } else {
+                    throw new Error('换脸任务失败: 状态码 ' + response.status);
+                }
+            } catch (error) {
+                console.error(error);
+                throw new Error('网络错误');
+            }
+        }
+
+        async function checkFaceFusionStatus(taskId) {
+            const apiUrl = `https://api.wer.plus/api/facefusion_query_task?task_id=${taskId}`;
+            console.log(apiUrl);
+            while (true) {
+                try {
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) {
+                        netload.style.display = 'none';
+                        eralert('请求失败: ' + response.status);
+                        throw new Error('请求失败: ' + response.status);
+                    }
+
+                    const data = await response.json();
+                    console.log(data);
+
+                    if (data.code !== 200) {
+                        netload.style.display = 'none';
+                        eralert('请求失败: ' + data.code);
+                        throw new Error('请求失败: ' + data.code);
+                    }
+
+                    if (data.status === 'finish') {
+                        console.log('任务已完成');
+                        console.log(data);
+                        const startButton = document.getElementById('creat_task');
+                        startButton.disabled = false; 
+                        netload.style.display = 'none';
+                        sualert("任务完成"+ data.image_url);
+                        document.getElementById("result_img").style.display = "block"
+                        document.getElementById("result_url").src = data.image_url;
+                        break;
+                    } else {
+                        sualert("任务状态：" + data.status);
+                    }
+
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // 暂停1秒后再次请求
+                } catch (error) {
+                    netload.style.display = 'none';
+                    eralert('请求失败: ' + data.code);
+                    throw new Error('网络错误');
+                }
+            }
+        }
+
+        async function processFaceFusionTask(sourceUrl, targetUrl) {
+            try {
+                const response = await createFaceFusionTask(sourceUrl, targetUrl);
+                const taskId = response.task_id;
+                await checkFaceFusionStatus(taskId);
+            } catch (error) {
+                netload.style.display = 'none';
+                eralert('任务失败: ' + error);
+                console.error(error);
+            }
+        }
+    </script>
+
+    <script>
+        // 加载框
+        const netload = document.getElementById('netload');
+        // 消息框
+        const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
+        const alert = (message, type) => {
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = [
+                `<div class="alert alert-${type} alert-dismissible fade show" role="alert">`,
+                `   <div>${message}</div>`,
+                '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+                '</div>'
+            ].join('');
+            alertPlaceholder.append(wrapper);
+            setTimeout(() => {
+                const closeButton = wrapper.querySelector('[aria-label="Close"]');
+                closeButton.click();
+            }, 3000);
+        }
+
+        // 封装一下错误消息
+        const eralert = (message) => {
+            alert(message, 'danger');
+        }
+        // 成功消息
+        const sualert = (message) => {
+            alert(message, 'success');
+        }
+
+
+        function downloadFile() {
+            var url = document.getElementById("result_url").src;
+            window.open(url, '_blank');
+        }
+        
+        var copyButton = document.getElementById('copyButton');
+        copyButton.addEventListener('click', function() {
+            var urlText = document.getElementById("result_url").src;
+            // 创建一个临时输入框
+            var tempInput = document.createElement("input");
+            tempInput.value = urlText;
+            document.body.appendChild(tempInput);
+
+            // 选择输入框中的文本
+            tempInput.select();
+            tempInput.setSelectionRange(0, tempInput.value.length); // For mobile devices
+
+            // 将文本复制到剪切板
+            document.execCommand("copy");
+
+            // 移除临时输入框
+            document.body.removeChild(tempInput);
+            sualert("图片链接复制成功，快去分享你的换脸成果吧");
+        });
+
+    </script>
+
+</body>
+</html>
