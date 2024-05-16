@@ -251,9 +251,15 @@
                         if (response.code === 200) {
                             resolve(response);
                         } else {
+                            if (response.status === 429) {
+                                eralert("每天可以免费生成十次，免费次数已经用完！");
+                                throw new Error('换脸任务失败: 状态码 429 - 太多请求');
+                            }
+                            eralert(response);
                             reject(new Error('上传失败: 错误代码 ' + response.code));
                         }
                     } else {
+                        eralert(xhr.responseText);
                         reject(new Error('上传失败: 状态码 ' + xhr.status));
                     }
                 };
@@ -283,10 +289,16 @@
                     console.log(data);
                     return data;
                 } else {
+                    if (response.status === 429) {
+                        eralert("每天可以免费生成十次，免费次数已经用完！");
+                        throw new Error('换脸任务失败: 状态码 429 - 太多请求');
+                    }
+                    eralert(response);
                     throw new Error('换脸任务失败: 状态码 ' + response.status);
                 }
             } catch (error) {
                 console.error(error);
+                eralert(error)
                 throw new Error('网络错误');
             }
         }
