@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手机尾号估分</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            /* background-image: url('https://pic4.zhimg.com/v2-88cc15114ade4cdadd6129432849accc_r.jpg?source=1940ef5c'); */
+            background-size: cover;
+            background-repeat: no-repeat;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            background-color: #86a7e5;
+        }
+
+        table {
+            background-color: rgba(255, 255, 255, 0.75);
+            /* 白色背景，不透明度为 60% */
+        }
+
+        h2 {
+            color: rgb(255, 77, 91);
+            /* 设置文字颜色为红色 */
+            text-shadow: 2px 2px 2px black;
+            /* 添加黑色的阴影效果 */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center" style="margin-bottom: 30px;">看看你的手机号值多少分</h2>
+        <div class="mb-3">
+            <!-- <label for="numberInput" class="form-label">请输入手机号:</label> -->
+            <input type="number" class="form-control" id="numberInput"
+                style="background-color: rgba(255, 255, 255, 0.75);overflow: hidden;">
+        </div>
+        <button class="btn btn-primary mb-3" id="addRowBtn" style="display: none;">添加行</button>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>手机尾号</th>
+                    <th>评分</th>
+                    <th>优秀程度</th>
+                </tr>
+            </thead>
+            <tbody id="dataTable">
+                <!-- 数据行将通过JavaScript动态添加 -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bootstrap Bundle JS（包括Popper） -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const numberInput = document.getElementById('numberInput');
+            const addRowBtn = document.getElementById('addRowBtn');
+            const dataTable = document.getElementById('dataTable');
+            addRowBtn.addEventListener('click', addRow);
+            numberInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // 阻止默认的回车键行为
+                    addRow();
+                }
+            });
+
+            function addRow() {
+                const newRow = dataTable.insertRow(0);
+                const cell1 = newRow.insertCell(0);
+                const cell2 = newRow.insertCell(1);
+                const cell3 = newRow.insertCell(2);
+                if (!numberInput.value || isNaN(numberInput.value) || numberInput.value.toString().length !== 4) {
+                    return;
+                }
+                console.log(numberInput.value);
+                cell1.textContent = numberInput.value;
+                cell1.style.fontWeight = 'bold';
+                generateScoreAndEvaluation(cell2, cell3, numberInput.value);
+                numberInput.value = ''; // 插入新行后清空输入框
+            }
+
+            function generateScoreAndEvaluation(scoreCell, evaluationCell, number) {
+                let score, evaluation;
+
+                const num = number.toString();
+                if (!number || isNaN(number) || number.toString().length !== 4) {
+                    return;
+                } else {
+                    let consecutiveCount = 1;
+                    let maxConsecutiveCount = 1;
+                    for (let i = 0; i < num.length - 1; i++) {
+                        if (num[i] === num[i + 1]) {
+                            consecutiveCount++;
+                            maxConsecutiveCount = Math.max(maxConsecutiveCount, consecutiveCount);
+                        } else {
+                            consecutiveCount = 1;
+                        }
+                    }
+
+                    if (maxConsecutiveCount === 1) {
+                        score = Math.floor(Math.random() * 11) + 60; // 60-70分
+                        scoreCell.style.color = 'blue'; // 蓝色
+                    } else if (maxConsecutiveCount === 2) {
+                        score = Math.floor(Math.random() * 11) + 70; // 70-80分
+                        scoreCell.style.color = 'blue'; // 绿色
+                    } else if (maxConsecutiveCount === 3) {
+                        score = Math.floor(Math.random() * 16) + 80; // 80-95分
+                        scoreCell.style.color = 'blue'; // 橙色
+                    } else {
+                        score = Math.floor(Math.random() * 6) + 95; // 95-100分
+                        scoreCell.style.color = 'red'; // 红色
+                    }
+                    scoreCell.style.fontWeight = 'bold';
+                    evaluationCell.style.fontWeight = 'bold';
+                    evaluationCell.style.color = scoreCell.style.color;
+                    evaluation = score >= 95 ? '很棒' : score >= 85 ? '优秀' : score >= 75 ? '良好' : '一般';
+                }
+
+                scoreCell.textContent = score !== undefined ? score : '-';
+                evaluationCell.textContent = evaluation !== undefined ? evaluation : '-';
+            }
+
+
+
+
+        });
+
+    </script>
+</body>
+
+</html>
