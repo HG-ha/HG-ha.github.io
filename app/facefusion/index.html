@@ -324,18 +324,18 @@
                         throw new Error('请求失败: ' + data.code);
                     }
 
-                    if (data.status === 'finish') {
+                    if (data.data.status === 'finish') {
                         console.log('任务已完成');
                         console.log(data);
                         const startButton = document.getElementById('creat_task');
                         startButton.disabled = false; 
                         netload.style.display = 'none';
-                        sualert("任务完成"+ data.image_url);
+                        sualert("任务完成"+ data.data.image_url);
                         document.getElementById("result_img").style.display = "block"
-                        document.getElementById("result_url").src = data.image_url;
+                        document.getElementById("result_url").src = data.data.image_url;
                         break;
                     } else {
-                        sualert("任务状态：" + data.status);
+                        sualert("任务状态：" + data.data.status);
                     }
 
                     await new Promise(resolve => setTimeout(resolve, 1000)); // 暂停1秒后再次请求
