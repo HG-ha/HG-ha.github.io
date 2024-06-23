@@ -350,7 +350,7 @@
         async function processFaceFusionTask(sourceUrl, targetUrl) {
             try {
                 const response = await createFaceFusionTask(sourceUrl, targetUrl);
-                const taskId = response.task_id;
+                const taskId = response.data.task_id;
                 await checkFaceFusionStatus(taskId);
             } catch (error) {
                 netload.style.display = 'none';
