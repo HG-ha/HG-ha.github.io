@@ -127,7 +127,7 @@
 			http('GET', "https://api.wer.plus/api/moyu")
 				.then(function (data) {
 					var jsonData = JSON.parse(data);
-					newimgurl = jsonData.moyu_share_url;
+					newimgurl = jsonData.data.moyu_share_url;
 					document.getElementById("urlImage").src = newimgurl;
 				}).catch(function (error) {
 					console.log(error);
