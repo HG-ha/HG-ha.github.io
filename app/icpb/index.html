@@ -87,14 +87,14 @@
                 <input id="ontoken" class="form-check-input mt-0" type="checkbox" value=""
                     aria-label="Checkbox for following text input">
             </div>
-            <span class="input-group-text" id="inputGroup-sizing-sm">token</span>
-            <input id="tokenvalue" type="text" class="form-control" aria-label="tokenvalue" placeholder="无token时查询次数将受到限制">
+<!--             <span class="input-group-text" id="inputGroup-sizing-sm">token</span>
+            <input id="tokenvalue" type="text" class="form-control" aria-label="tokenvalue" placeholder="无token时查询次数将受到限制"> -->
         </div>
         <div id="query_type" class="container text-left">
             <input type="radio" class="btn-check" name="query_options" id="web" autocomplete="off" checked>
             <label class="btn btn-outline-success mt-2" for="web">网站</label>
 
-            <input type="radio" class="btn-check" name="query_options" id="app" autocomplete="off">
+<!--             <input type="radio" class="btn-check" name="query_options" id="app" autocomplete="off">
             <label class="btn btn-outline-success mt-2" for="app">APP</label>
 
             <input type="radio" class="btn-check" name="query_options" id="mapp" autocomplete="off">
@@ -113,7 +113,7 @@
             <label class="btn btn-outline-success mt-2" for="bmapp">违规小程序</label>
 
             <input type="radio" class="btn-check" name="query_options" id="bkapp" autocomplete="off">
-            <label class="btn btn-outline-success mt-2" for="bkapp">违规快应用</label>
+            <label class="btn btn-outline-success mt-2" for="bkapp">违规快应用</label> -->
         </div>
     </div>
     <div class="container text-center">
@@ -158,7 +158,9 @@
             // 判断是否使用token
             var ontoken = document.getElementById("ontoken").checked;
             // 限制每次一条数据
-            var query_url = `https://api.wer.plus/api/icpb?t=${query_value}&b=${selectedOption}&pageSize=1`;
+            // var query_url = `https://api.wer.plus/api/icpb?t=${query_value}&b=${selectedOption}&pageSize=1`;
+            // 演示API，该key仅做演示
+            var query_url = `https://api2.wer.plus/api/icpb?t=${query_value}&key=xGvtF1IbHf2l0BhPImhR1nm4NdPohNwY`;
             if (!query_value || !selectedOption) {
                 eralert("请输入要查询的内容");
                 return;
