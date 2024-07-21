@@ -182,45 +182,45 @@
                     var jsonPretty = JSON.stringify(jsonData, null, 4);
                     document.getElementById("jsonOutput").innerHTML = `<pre>${jsonPretty}</pre>`;
                     hljs.highlightAll();
-                    if (jsonData.params.list.length === 0) {
-                        sualert("未查询到相关数据");
-                        return;
-                    } else {
-                        sualert("查询成功");
-                        var tables = document.createElement("table");
-                        tables.className = "table table-bordered";
-                        var talbes_head = document.createElement("thead");
-                        var head_row = document.createElement("tr");
-                        Object.keys(jsonData.params.list[0]).forEach(function (key) {
-                            var th = document.createElement("th");
-                            if (key in headerMapping) {
-                                th.textContent = headerMapping[key];
-                            } else {
-                                th.textContent = key;
-                            }
-                            th.scope = "col";
-                            th.className = "no-wrap";
-                            head_row.appendChild(th);
-                        });
-                        talbes_head.appendChild(head_row);
-                        tables.tHead = talbes_head;
+                    // if (jsonData.params.list.length === 0) {
+                    //     sualert("未查询到相关数据");
+                    //     return;
+                    // } else {
+                    //     sualert("查询成功");
+                    //     var tables = document.createElement("table");
+                    //     tables.className = "table table-bordered";
+                    //     var talbes_head = document.createElement("thead");
+                    //     var head_row = document.createElement("tr");
+                    //     Object.keys(jsonData.params.list[0]).forEach(function (key) {
+                    //         var th = document.createElement("th");
+                    //         if (key in headerMapping) {
+                    //             th.textContent = headerMapping[key];
+                    //         } else {
+                    //             th.textContent = key;
+                    //         }
+                    //         th.scope = "col";
+                    //         th.className = "no-wrap";
+                    //         head_row.appendChild(th);
+                    //     });
+                    //     talbes_head.appendChild(head_row);
+                    //     tables.tHead = talbes_head;
 
-                        var talbes_body = document.createElement("tbody");
-                        jsonData.params.list.forEach(function (item) {
-                            var body_tr = document.createElement("tr");
-                            Object.keys(item).forEach(function (values) {
-                                var td = document.createElement("td");
-                                td.textContent = item[values];
-                                td.className = "no-wrap";
-                                body_tr.appendChild(td);
-                            })
-                            talbes_body.appendChild(body_tr);
-                        });
-                        tables.appendChild(talbes_body);
-                        var result_div = document.getElementById("query_result");
-                        result_div.innerHTML = '';
-                        result_div.appendChild(tables);
-                    }
+                    //     var talbes_body = document.createElement("tbody");
+                    //     jsonData.params.list.forEach(function (item) {
+                    //         var body_tr = document.createElement("tr");
+                    //         Object.keys(item).forEach(function (values) {
+                    //             var td = document.createElement("td");
+                    //             td.textContent = item[values];
+                    //             td.className = "no-wrap";
+                    //             body_tr.appendChild(td);
+                    //         })
+                    //         talbes_body.appendChild(body_tr);
+                    //     });
+                    //     tables.appendChild(talbes_body);
+                    //     var result_div = document.getElementById("query_result");
+                    //     result_div.innerHTML = '';
+                    //     result_div.appendChild(tables);
+                    // }
                 })
                 .catch(function (error) {
                     eralert(error);
