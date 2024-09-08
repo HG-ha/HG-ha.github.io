@@ -82,14 +82,14 @@
             <button class="btn btn-outline-secondary" type="button" id="button-addon2"
                 onclick="getIcpInfo()">查询</button>
         </div>
-<!--         <div class="input-group mb-3">
+        <div class="input-group mb-3">
             <div class="input-group-text">
                 <input id="ontoken" class="form-check-input mt-0" type="checkbox" value=""
                     aria-label="Checkbox for following text input">
             </div>
-            <span class="input-group-text" id="inputGroup-sizing-sm">token</span>
-            <input id="tokenvalue" type="text" class="form-control" aria-label="tokenvalue" placeholder="无token时查询次数将受到限制">
-        </div> -->
+            <span class="input-group-text" id="inputGroup-sizing-sm">key</span>
+            <input id="tokenvalue" type="text" class="form-control" aria-label="tokenvalue" placeholder="需要key授权，申请key：api2.wer.plus">
+        </div>
         <div id="query_type" class="container text-left">
             <input type="radio" class="btn-check" name="query_options" id="web" autocomplete="off" checked>
             <label class="btn btn-outline-success mt-2" for="web">网站</label>
@@ -157,23 +157,23 @@
             var query_value = document.getElementById("query_value").value;
             var query_type = document.getElementById("query_type").value;
             // 判断是否使用token
-            // var ontoken = document.getElementById("ontoken").checked;
+            var ontoken = document.getElementById("ontoken").checked;
             // 限制每次一条数据
             // var query_url = `https://api.wer.plus/api/icpb?t=${query_value}&b=${selectedOption}&pageSize=1`;
             // 演示API，该key仅做演示
-            var query_url = `https://api2.wer.plus/api/icpb?t=${query_value}&apptype=${query_type}&key=xGvtF1IbHf2l0BhPImhR1nm4NdPohNwY`;
+            var query_url = `https://api2.wer.plus/api/icpb?t=${query_value}&apptype=${query_type}`;
             if (!query_value || !selectedOption) {
                 eralert("请输入要查询的内容");
                 return;
             }
-            // if (ontoken) {
-            //     var token = document.getElementById("tokenvalue").value;
-            //     if (!token) {
-            //         eralert("请输入token");
-            //         return;
-            //     }
-            //     query_url = `${query_url}&token=${token}`;
-            // }
+            if (ontoken) {
+                var token = document.getElementById("tokenvalue").value;
+                if (!token) {
+                    eralert("请输入token");
+                    return;
+                }
+                query_url = `${query_url}&key=${token}`;
+            }
 
             console.log(query_url);
             http('GET', query_url)
