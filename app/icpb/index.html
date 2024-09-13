@@ -155,16 +155,21 @@
         function getIcpInfo() {
             // 获取输入数据
             var query_value = document.getElementById("query_value").value;
-            var query_type = document.getElementById("query_type").value;
+            // 获取当前选中的 radio 按钮
+            const selectedRadio = document.querySelector('#query_type input[type="radio"]:checked');
+            
+            // 如果有选中的 radio 按钮
+            if (selectedRadio) {
+                const selectedId = selectedRadio.id;  // 获取选中的 radio 的 id
+                const selectedLabel = document.querySelector(`label[for="${selectedId}"]`);  // 获取对应的 label
+            }
+
             // 判断是否使用token
             var ontoken = document.getElementById("ontoken").checked;
             // 限制每次一条数据
             // var query_url = `https://api.wer.plus/api/icpb?t=${query_value}&b=${selectedOption}&pageSize=1`;
             // 演示API，该key仅做演示
-            if (!query_type) {
-                var query_type = 'web';
-            }
-            var query_url = `https://api2.wer.plus/api/icpb?t=${query_value}&apptype=${query_type}`;
+            var query_url = `https://api2.wer.plus/api/icpb?t=${query_value}&apptype=${selectedId}`;
             if (!query_value || !selectedOption) {
                 eralert("请输入要查询的内容");
                 return;
