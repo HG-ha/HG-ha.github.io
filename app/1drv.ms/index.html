@@ -1,0 +1,92 @@
+<!-- filepath: index.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1drv.ms 链接转换器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .input-group {
+            margin: 20px 0;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <h1>1drv.ms 链接转换器</h1>
+    <div class="input-group">
+        <label for="shortUrl">输入1drv.ms短链接：</label>
+        <input type="text" id="shortUrl" placeholder="https://1drv.ms/...">
+    </div>
+    <button onclick="convertUrl()">转换</button>
+    <div id="result"></div>
+
+    <script>
+        function generatePermanentLink(url, fileType = "jpg", isHttps = true) {
+            const baseUrl = isHttps ? "https://dlink.host/1drv/" : "http://dlink.host/1drv/";
+            const encodedUrl = btoa(url).replace(/=/g, '');
+            return `${baseUrl}${encodedUrl}.${fileType}`;
+        }
+
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 页面加载时检查URL参数
+        window.onload = function() {
+            const urlParam = getUrlParameter('url');
+            if (urlParam) {
+                try {
+                    const permanentLink = generatePermanentLink(urlParam);
+                    window.location.href = permanentLink;
+                } catch (error) {
+                    document.getElementById('result').innerHTML = 
+                        `<p style="color: red;">转换失败: ${error.message}</p>`;
+                }
+            }
+        };
+
+        function convertUrl() {
+            const shortUrl = document.getElementById('shortUrl').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!shortUrl) {
+                resultDiv.innerHTML = '<p style="color: red;">请输入有效的链接</p>';
+                return;
+            }
+
+            try {
+                const permanentLink = generatePermanentLink(shortUrl);
+                resultDiv.innerHTML = `
+                    <p>转换成功！</p>
+                    <p>永久链接：<a href="${permanentLink}" target="_blank">${permanentLink}</a></p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">转换失败: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
