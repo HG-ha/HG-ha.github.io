@@ -43,10 +43,10 @@
     <div id="result"></div>
 
     <script>
-        function generatePermanentLink(url, fileType = "jpg", isHttps = true) {
+        function generatePermanentLink(url, isHttps = true) {
             const baseUrl = isHttps ? "https://dlink.host/1drv/" : "http://dlink.host/1drv/";
             const encodedUrl = btoa(url).replace(/=/g, '');
-            return `${baseUrl}${encodedUrl}.${fileType}`;
+            return `${baseUrl}${encodedUrl}`;
         }
 
         function getUrlParameter(name) {
